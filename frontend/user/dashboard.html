@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account | ShopEasy</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <nav>
+    <h1>🛒 ShopEasy</h1>
+    <div class="nav-links">
+      <a href="../index.html">🏠 Home</a>
+      <a href="orders.html">My Orders</a>
+      <a href="cart.html" class="cart-btn">🛒 Cart <span id="cartCount">0</span></a>
+      <a href="#" onclick="logout()">🚪 Logout</a>
+    </div>
+  </nav>
+
+  <div class="user-dashboard">
+    <div class="welcome-card">
+      <h2>👋 Welcome, <span id="userName"></span>!</h2>
+      <p style="color:#ccc;margin-top:8px">Welcome to ShopEasy</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card" onclick="window.location.href='orders.html'" style="cursor:pointer">
+        <div class="stat-number" id="myOrders">-</div>
+        <div class="stat-label">📦 My Orders</div>
+      </div>
+      <div class="stat-card" onclick="window.location.href='cart.html'" style="cursor:pointer">
+        <div class="stat-number" id="myCartItems">-</div>
+        <div class="stat-label">🛒 Cart Items</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h2>📦 My Recent Orders</h2>
+      <a href="orders.html" class="btn btn-primary">View All Orders</a>
+    </div>
+    <div id="recentOrders"></div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script>
+    const token = localStorage.getItem('token');
+
+    if (!token) window.location.href = '../login.html';
+    if (localStorage.getItem('role') === 'admin') window.location.href = '../admin/dashboard.html';
+
+    document.getElementById('userName').textContent = localStorage.getItem('name') || 'User';
+
+    // Cart count
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    document.getElementById('myCartItems').textContent = cart.reduce((s, i) => s + i.quantity, 0);
+    updateCartCount();
+
+    async function loadDashboard() {
+      try {
+        const res = await fetch(`${API}/orders/my`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const orders = await res.json();
+
+        document.getElementById('myOrders').textContent = orders.length;
+
+        const recentDiv = document.getElementById('recentOrders');
+        if (orders.length === 0) {
+          recentDiv.innerHTML = `
+            <div class="empty-cart">
+              <div class="empty-icon">📦</div>
+              <p>You haven't placed any orders yet</p>
+              <br>
+              <a href="../index.html" class="btn btn-primary">🛍️ Start Shopping</a>
+            </div>
+          `;
+          return;
+        }
+
+        recentDiv.innerHTML = orders.slice(0, 3).map(o => `
+          <div class="order-card">
+            <div class="order-header">
+              <span class="order-id">Order #${o._id.slice(-6).toUpperCase()}</span>
+              <span class="status-badge status-${o.status}">${o.status}</span>
+            </div>
+            <p>📍 ${o.address}</p>
+            <div class="order-footer">
+              <span>${new Date(o.createdAt).toLocaleDateString()}</span>
+              <span class="order-total">₹${o.totalAmount.toLocaleString()}</span>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopEasy - Online Shopping</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav>
+    <h1>🛒 ShopEasy</h1>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <span id="authButtons"></span>
+      <a href="#" class="cart-btn" onclick="goToCart()">
+        🛒 Cart <span id="cartCount">0</span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <h2>🛍️ Best Products, Best Prices!</h2>
+    <p>Choose from thousands of your favorite products</p>
+  </div>
+
+  <div class="search-section">
+    <input type="text" id="searchInput" placeholder="🔍 Search products..." oninput="filterProducts()">
+    <select id="categoryFilter" onchange="filterProducts()">
+      <option value="">All Categories</option>
+    </select>
+  </div>
+
+  <div id="productsGrid"></div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/products.js"></script>
+  <script>
+    function goToCart() {
+      if (!localStorage.getItem('token')) {
+        showToast('Please login to access your cart!', 'error');
+        setTimeout(() => window.location.href = 'login.html', 1200);
+        return;
+      }
+      window.location.href = 'user/cart.html';
+    }
+
+    updateNavbar();
+    updateCartCount();
+    loadProducts();
+  </script>
+</body>
+</html>

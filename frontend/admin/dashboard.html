@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | ShopEasy</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <nav>
+    <h1>⚙️ Admin Panel</h1>
+    <div class="nav-links">
+      <a href="../index.html">🏠 Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="add-product.html">+ Product Add</a>
+      <a href="#" onclick="logout()">🚪 Logout</a>
+    </div>
+  </nav>
+
+  <div class="admin-container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="totalProducts">-</div>
+        <div class="stat-label">📦 Total Products</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="totalOrders">-</div>
+        <div class="stat-label">🛒 Total Orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="totalRevenue">-</div>
+        <div class="stat-label">💰 Total Revenue</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingOrders">-</div>
+        <div class="stat-label">⏳ Pending Orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="lowStockCount">-</div>
+        <div class="stat-label">⚠️ Low Stock (&lt;=5)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="outStockCount">-</div>
+        <div class="stat-label">❌ Out of Stock</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h2>📦 Manage Products</h2>
+      <div class="controls" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <a href="add-product.html" class="btn btn-primary">+ New Product</a>
+        <button class="btn" onclick="loadAdminDashboard('all')">All</button>
+        <button class="btn" onclick="loadAdminDashboard('low')">Low stock</button>
+        <button class="btn" onclick="loadAdminDashboard('out')">Out of stock</button>
+      </div>
+      <div class="filter-bar" style="margin-top:10px">
+        <input type="text" id="productSearch" placeholder="Search products by name / id" oninput="filterProductsAdmin()" style="width:100%;max-width:400px;padding:6px">
+      </div>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="productsTable">
+        <tr><td colspan="6" style="text-align:center;padding:30px">
+          <div class="spinner"></div>
+        </td></tr>
+      </tbody>
+    </table>
+
+    <div class="section-header">
+      <h2>📋 Manage Orders</h2>
+    </div>
+    <div class="filter-bar" style="margin-bottom:10px">
+      <input type="text" id="orderSearch" placeholder="Search orders by name / email / id" oninput="filterOrders()" style="width:100%;max-width:400px;padding:6px">
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Update Status</th>
+        </tr>
+      </thead>
+      <tbody id="ordersTable">
+        <tr><td colspan="5" style="text-align:center;padding:30px">
+          <div class="spinner"></div>
+        </td></tr>
+      </tbody>
+    </table>
+
+    <div class="section-header" style="margin-top:40px">
+      <h2>👥 Search Users</h2>
+    </div>
+    <div class="filter-bar" style="margin-bottom:10px">
+      <input type="text" id="userSearch" placeholder="Search users by name / email / id" oninput="searchUsers()" style="width:100%;max-width:400px;padding:6px">
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+        </tr>
+      </thead>
+      <tbody id="usersTable">
+        <tr><td colspan="4" style="text-align:center;padding:30px">
+          <div class="spinner"></div>
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    loadAdminDashboard();
+  </script>
+</body>
+</html>

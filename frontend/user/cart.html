@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Cart | ShopEasy</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <nav>
+    <h1>🛒 ShopEasy</h1>
+    <div class="nav-links">
+      <a href="../index.html">🏠 Home</a>
+      <a href="dashboard.html">My Account</a>
+      <a href="orders.html">My Orders</a>
+      <a href="#" onclick="logout()">🚪 Logout</a>
+    </div>
+  </nav>
+
+  <div class="cart-container">
+    <h2>🛒 My Cart</h2>
+    <div id="cartItems"></div>
+
+    <div id="cartSummary" class="cart-summary" style="display:none">
+      <h3>💰 Total: <span id="totalAmount">₹0</span></h3>
+      <input type="text" id="addressInput" placeholder="📍 Enter delivery address *">
+      <button class="place-order-btn" id="orderBtn" onclick="placeOrder()">
+        ✅ Place Order
+      </button>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/cart.js"></script>
+  <script>
+    if (!localStorage.getItem('token')) window.location.href = '../login.html';
+    updateCartCount();
+    loadCart();
+  </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | ShopEasy</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="auth-container">
+    <div class="auth-box">
+      <h2>🛒 ShopEasy</h2>
+      <p class="subtitle">Login or create a new account</p>
+
+      <div class="tabs">
+        <button class="tab active" id="loginTab" onclick="showTab('login')">Login</button>
+        <button class="tab" id="registerTab" onclick="showTab('register')">Register</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="loginForm">
+        <input type="email" id="loginEmail" placeholder="📧 Email address">
+        <input type="password" id="loginPassword" placeholder="🔒 Password">
+        <button class="submit-btn" onclick="doLogin()">🚀 Login</button>
+        <p id="loginMsg" class="msg" style="display:none"></p>
+      </div>
+
+      <!-- Register Form -->
+      <div id="registerForm" style="display:none">
+        <input type="text" id="regName" placeholder="👤 Your name">
+        <input type="email" id="regEmail" placeholder="📧 Email address">
+        <input type="password" id="regPassword" placeholder="🔒 Create password">
+        <button class="submit-btn" onclick="doRegister()">✅ Create Account</button>
+        <p id="regMsg" class="msg" style="display:none"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // If already logged in
+    if (localStorage.getItem('token')) {
+      const role = localStorage.getItem('role');
+      const target = role === 'admin' ? 'admin/dashboard.html' : 'user/dashboard.html';
+      window.location.href = target;
+    }
+
+    function showTab(tab) {
+      document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+      document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+      document.getElementById('loginTab').classList.toggle('active', tab === 'login');
+      document.getElementById('registerTab').classList.toggle('active', tab === 'register');
+    }
+
+    async function doLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const msg = document.getElementById('loginMsg');
+
+      if (!email || !password) {
+        showMsg(msg, 'Email and password are both required!', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('role', data.role);
+          localStorage.setItem('name', data.name);
+
+          showMsg(msg, '✅ Login successful! Redirecting...', 'success');
+
+          setTimeout(() => {
+            // Admin or User — different dashboards from the same login page
+            if (data.role === 'admin') {
+              window.location.href = 'admin/dashboard.html';
+            } else {
+              window.location.href = 'user/dashboard.html';
+            }
+          }, 1000);
+        } else {
+          showMsg(msg, '❌ ' + data.message, 'error');
+        }
+      } catch (err) {
+        showMsg(msg, '❌ Could not connect to the server!', 'error');
+      }
+    }
+
+    async function doRegister() {
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const msg = document.getElementById('regMsg');
+
+      if (!name || !email || !password) {
+        showMsg(msg, 'Please fill in all fields!', 'error');
+        return;
+      }
+
+      if (password.length < 6) {
+        showMsg(msg, 'Password must be at least 6 characters long!', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          showMsg(msg, '✅ Account created! Please login now.', 'success');
+          setTimeout(() => showTab('login'), 1500);
+        } else {
+          showMsg(msg, '❌ ' + data.message, 'error');
+        }
+      } catch (err) {
+        showMsg(msg, '❌ Server error!', 'error');
+      }
+    }
+
+    function showMsg(el, text, type) {
+      el.textContent = text;
+      el.className = `msg ${type}`;
+      el.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
